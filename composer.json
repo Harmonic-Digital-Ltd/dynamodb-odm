@@ -13,7 +13,7 @@
     "config": {
         "sort-packages": true
     },
-    "license": "MIT Non-AI License",
+    "license": "MIT with Non-AI",
     "autoload": {
         "psr-4": {
             "HarmonicDigital\\DynamodbOdm\\": "src/"
