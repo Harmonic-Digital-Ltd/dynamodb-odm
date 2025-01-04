@@ -1,0 +1,44 @@
+{
+    "name": "harmonicdigital/dynamodb-odm",
+    "description": "A simple ODM for interacting with DynamoDB",
+    "keywords": [
+        "dynamodb",
+        "odm",
+        "orm",
+        "aws",
+        "database",
+        "nosql"
+    ],
+    "type": "library",
+    "config": {
+        "sort-packages": true
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "HarmonicDigital\\DynamodbOdm\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "HarmonicDigital\\DynamodbOdm\\Test\\": "tests/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Rick Ogden",
+            "email": "rick@harmonicdigital.uk"
+        }
+    ],
+    "require": {
+        "php": "^8.2",
+        "aws/aws-sdk-php": "^3.0",
+        "symfony/property-access": "^5.4 || ^6.4 || ^7.0",
+        "symfony/serializer": "^5.4 || ^6.4 || ^7.0"
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.66",
+        "phpstan/phpstan": "^2.1",
+        "phpunit/phpunit": "^11.5"
+    }
+}

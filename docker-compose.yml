@@ -1,0 +1,17 @@
+services:
+    php:
+        image: php:8.4-cli
+        container_name: php-container
+        environment:
+            DYNAMODB_ENDPOINT: http://dynamodb:8000
+            DYNAMODB_ACCESS_KEY_ID: 'dummy'
+            DYNAMODB_ACCESS_KEY_SECRET: 'dummy'
+        volumes:
+            - .:/var/www/html
+        working_dir: /var/www/html
+        depends_on:
+            - dynamodb
+
+    dynamodb:
+        image: amazon/dynamodb-local
+        container_name: dynamodb-container
