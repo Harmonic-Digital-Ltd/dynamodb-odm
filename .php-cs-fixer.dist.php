@@ -11,6 +11,7 @@ return (new PhpCsFixer\Config())
         '@Symfony' => true,
         '@PSR12' => true,
         '@PhpCsFixer' => true,
+        'declare_strict_types' => true,
     ])
     ->setFinder($finder)
 ;
