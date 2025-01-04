@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace HarmonicDigital\DynamodbOdm\Test\Model;
 
+use Aws\DynamoDb\BinaryValue;
 use HarmonicDigital\DynamodbOdm\Attribute\Field;
 use HarmonicDigital\DynamodbOdm\Attribute\Item;
 use HarmonicDigital\DynamodbOdm\Attribute\PartitionKey;
@@ -13,12 +14,12 @@ use HarmonicDigital\DynamodbOdm\Transformer\DateTimeTransformer;
 #[Item('test')]
 class TestObject
 {
-    #[Field('S')]
+    #[Field]
     #[PartitionKey]
     private string $id;
     #[Field]
     private string $name;
-    #[Field('N')]
+    #[Field]
     #[SortKey]
     private int $age;
 
@@ -35,6 +36,9 @@ class TestObject
     private bool $bool = true;
 
     #[Field]
+    private BinaryValue $binary;
+
+    #[Field]
     private array $map = ['key' => 'value', 'hello' => 'world'];
 
     #[Field]
@@ -45,6 +49,9 @@ class TestObject
 
     #[Field('NS')]
     private array $numberSet = [1, 2.5, -3];
+
+    #[Field('BS')]
+    private array $binarySet;
 
     #[Field]
     #[DateTimeTransformer]
@@ -57,6 +64,8 @@ class TestObject
         $this->id = $id;
         $this->name = $name;
         $this->age = $age;
+        $this->binary = new BinaryValue('binary');
+        $this->binarySet = [new BinaryValue('binary1'), new BinaryValue('binary2')];
         $this->unmapped = $unmapped;
         $this->dateTimeImmutable = new \DateTimeImmutable('2021-01-01T00:00:00.000000Z');
     }
@@ -124,5 +133,15 @@ class TestObject
     public function getDateTimeImmutable(): \DateTimeImmutable
     {
         return $this->dateTimeImmutable;
+    }
+
+    public function getBinary(): BinaryValue
+    {
+        return $this->binary;
+    }
+
+    public function getBinarySet(): array
+    {
+        return $this->binarySet;
     }
 }

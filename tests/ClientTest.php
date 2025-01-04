@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace HarmonicDigital\DynamodbOdm\Test;
 
+use Aws\DynamoDb\BinaryValue;
 use Aws\DynamoDb\DynamoDbClient;
 use HarmonicDigital\DynamodbOdm\Attribute\Field;
 use HarmonicDigital\DynamodbOdm\Attribute\Item;
@@ -57,6 +58,7 @@ class ClientTest extends TestCase
                             'age' => ['N' => '30'],
                             'float' => ['N' => '3.14'],
                             'intAsFloat' => ['N' => '4'],
+                            'binary' => ['B' => 'binary'],
                             'nullable' => ['NULL' => true],
                             'bool' => ['BOOL' => true],
                             'map' => ['M' => ['key' => ['S' => 'value'], 'hello' => ['S' => 'world']]],
@@ -65,6 +67,7 @@ class ClientTest extends TestCase
                             ],
                             'stringSet' => ['SS' => ['one', 'two', 'three']],
                             'numberSet' => ['NS' => ['1', '2.5', '-3']],
+                            'binarySet' => ['BS' => ['binary1', 'binary2']],
                             'dateTimeImmutable' => ['S' => '1609459200.000000'],
                         ],
                     ],
@@ -120,10 +123,12 @@ class ClientTest extends TestCase
                     'age' => ['N' => '30'],
                     'nullable' => ['NULL' => true],
                     'bool' => ['BOOL' => true],
+                    'binary' => ['B' => 'binary'],
                     'map' => ['M' => ['key' => ['S' => 'value'], 'hello' => ['S' => 'world']]],
                     'list' => ['L' => [['S' => 'one'], ['N' => '2'], ['BOOL' => true], ['N' => '4.5']]],
                     'stringSet' => ['SS' => ['one', 'two', 'three']],
                     'numberSet' => ['NS' => ['1', '2.5', '-3']],
+                    'binarySet' => ['BS' => ['binary1', 'binary2']],
                     'dateTimeImmutable' => ['S' => '1609545600.000000'],
                 ],
             ])
@@ -138,6 +143,8 @@ class ClientTest extends TestCase
         $this->assertSame(3.14, $result->getFloat());
         $this->assertSame(4.0, $result->getIntAsFloat());
         $this->assertSame('unmapped', $result->getUnmapped());
+        $this->assertSame('binary', $result->getBinary()->__toString());
+        $this->assertEquals([new BinaryValue('binary1'), new BinaryValue('binary2')], $result->getBinarySet());
         $this->assertNull($result->getNullable());
         $this->assertTrue($result->isBool());
         $this->assertSame(['key' => 'value', 'hello' => 'world'], $result->getMap());

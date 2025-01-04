@@ -21,9 +21,6 @@ readonly class MappedItem
     private function __construct(
         public Item $item,
         public string $className,
-        /**
-         * @var array<string, MappedField>
-         */
         private array $fields,
         private MappedField $partitionKeyProperty,
         private ?MappedField $sortKeyProperty = null,
@@ -52,19 +49,15 @@ readonly class MappedItem
 
             /** @var Field $type */
             $type = $fieldAttribute->newInstance();
-            $propertyName = $property->getName();
-            $name = $type->name ?? $propertyName;
             $mf = new MappedField(
                 $type,
-                $name,
-                $propertyName,
                 $property
             );
-            $itemFields[$propertyName] = $mf;
-            if ($mf->isPartitionKey) {
+            $itemFields[$mf->propertyName] = $mf;
+            if ($mf->isPartitionKey()) {
                 $pk = $mf;
             }
-            if ($mf->isSortKey) {
+            if ($mf->isSortKey()) {
                 $sk = $mf;
             }
         }
@@ -178,23 +171,23 @@ readonly class MappedItem
         ];
 
         foreach ($this->fields as $field) {
-            if ($field->isPartitionKey) {
+            if ($field->isPartitionKey()) {
                 $params['KeySchema'][] = [
                     'AttributeName' => $field->fieldName,
                     'KeyType' => 'HASH',
                 ];
                 $params['AttributeDefinitions'][] = [
                     'AttributeName' => $field->fieldName,
-                    'AttributeType' => $field->field->type,
+                    'AttributeType' => $field->getType(),
                 ];
-            } elseif ($field->isSortKey) {
+            } elseif ($field->isSortKey()) {
                 $params['KeySchema'][] = [
                     'AttributeName' => $field->fieldName,
                     'KeyType' => 'RANGE',
                 ];
                 $params['AttributeDefinitions'][] = [
                     'AttributeName' => $field->fieldName,
-                    'AttributeType' => $field->field->type,
+                    'AttributeType' => $field->getType(),
                 ];
             }
         }

@@ -30,7 +30,7 @@ use HarmonicDigital\DynamodbOdm\Attribute\SortKey;
 #[Item(tableName: 'my_table')]
 class MyItem
 {
-    #[Field('S')] // Types are required on partition and sort keys
+    #[Field] // Type 'S'
     #[PartitionKey] // Use as the partition key
     private string $id;
 
