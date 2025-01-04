@@ -23,7 +23,9 @@ Here is an example of a model class `MyItem` that can be used with the ODM:
 
 
 use HarmonicDigital\DynamodbOdm\Attribute\Field;
-use HarmonicDigital\DynamodbOdm\Attribute\Item;use HarmonicDigital\DynamodbOdm\Attribute\PartitionKey;use HarmonicDigital\DynamodbOdm\Attribute\SortKey;
+use HarmonicDigital\DynamodbOdm\Attribute\Item;
+use HarmonicDigital\DynamodbOdm\Attribute\PartitionKey;
+use HarmonicDigital\DynamodbOdm\Attribute\SortKey;
 
 #[Item(tableName: 'my_table')]
 class MyItem
@@ -151,7 +153,6 @@ class DateTimeTransformer implements Transformer
 Usage:
 ```php
 <?php
-
 
 use HarmonicDigital\DynamodbOdm\Attribute\Field;
 use HarmonicDigital\DynamodbOdm\Attribute\Item;
