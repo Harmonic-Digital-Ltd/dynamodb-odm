@@ -18,7 +18,6 @@ use PHPUnit\Framework\TestCase;
 #[CoversClass(MappedField::class)]
 class MappedFieldTest extends TestCase
 {
-
     public static function typeProvider(): iterable
     {
         yield 'string' => ['this is a string', 'S'];

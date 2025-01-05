@@ -144,4 +144,9 @@ class TestObject
     {
         return $this->binarySet;
     }
+
+    public function setName(string $name): void
+    {
+        $this->name = $name;
+    }
 }

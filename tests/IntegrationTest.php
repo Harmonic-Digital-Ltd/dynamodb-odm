@@ -49,6 +49,11 @@ class IntegrationTest extends TestCase
 
         $retrievedItem2 = $this->client->getItem(TestObject::class, 'id', 30);
         $this->assertEquals($item, $retrievedItem2);
+        $retrievedItem2->setName('new name');
+        $this->client->put($retrievedItem2);
+        $retrievedItem3 = $this->client->getItem(TestObject::class, 'id', 30);
+        $this->assertEquals($retrievedItem2, $retrievedItem3);
+        $this->assertNotEquals($item, $retrievedItem3);
         $this->client->delete($item);
         $this->assertNull($this->client->getItem(TestObject::class, 'id', 30));
     }
