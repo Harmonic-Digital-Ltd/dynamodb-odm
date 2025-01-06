@@ -7,6 +7,7 @@ namespace HarmonicDigital\DynamodbOdm\Test\Parser;
 use Aws\DynamoDb\BinaryValue;
 use HarmonicDigital\DynamodbOdm\Attribute\Field;
 use HarmonicDigital\DynamodbOdm\Parser\MappedField;
+use HarmonicDigital\DynamodbOdm\Parser\MappedItem;
 use HarmonicDigital\DynamodbOdm\Test\Model\TestObject;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -87,6 +88,7 @@ class MappedFieldTest extends TestCase
         return new MappedField(
             $reflectionProperty->getAttributes(Field::class)[0]->newInstance(),
             $reflectionProperty,
+            new MappedItem(TestObject::class),
         );
     }
 }

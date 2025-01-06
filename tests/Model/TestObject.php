@@ -11,7 +11,7 @@ use HarmonicDigital\DynamodbOdm\Attribute\PartitionKey;
 use HarmonicDigital\DynamodbOdm\Attribute\SortKey;
 use HarmonicDigital\DynamodbOdm\Transformer\DateTimeTransformer;
 
-#[Item('test')]
+#[Item('test', partitionKeyPrefix: 'PREFIX#')]
 class TestObject
 {
     #[Field]

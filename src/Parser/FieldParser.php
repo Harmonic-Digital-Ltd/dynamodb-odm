@@ -33,9 +33,10 @@ readonly class FieldParser
 
         /** @var array<string, mixed> $value */
         foreach ($item as $key => $value) {
+            $mappedField = $fields[$key];
             $v = $this->marshaller->unmarshalValue($value);
             $v = $fields[$key]->transformFromDatabaseValue($v);
-            $result[$fields[$key]->propertyName] = $v;
+            $result[$mappedField->propertyName] = $v;
         }
 
         return $result;

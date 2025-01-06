@@ -14,26 +14,25 @@ use HarmonicDigital\DynamodbOdm\Attribute\Item;
  */
 readonly class MappedItem
 {
-    /**
-     * @param class-string<T>            $className
-     * @param array<string, MappedField> $fields
-     */
-    private function __construct(
-        public Item $item,
-        public string $className,
-        private array $fields,
-        private MappedField $partitionKeyProperty,
-        private ?MappedField $sortKeyProperty = null,
-    ) {}
+    public Item $item;
 
-    /** @param class-string<T> $className */
-    public static function fromClass(string $className): self
+    /** @var array<string, MappedField> */
+    private array $fields;
+    private MappedField $partitionKeyProperty;
+    private ?MappedField $sortKeyProperty;
+
+    /**
+     * @param class-string<T> $className
+     */
+    public function __construct(public string $className)
     {
         $class = new \ReflectionClass($className);
         $item = $class->getAttributes(Item::class)[0] ?? null;
         if (null === $item) {
             throw new \InvalidArgumentException('Not a DynamoDb item');
         }
+
+        $this->item = $item->newInstance();
 
         $properties = $class->getProperties();
 
@@ -49,24 +48,28 @@ readonly class MappedItem
 
             /** @var Field $type */
             $type = $fieldAttribute->newInstance();
+
             $mf = new MappedField(
                 $type,
-                $property
+                $property,
+                $this,
             );
             $itemFields[$mf->propertyName] = $mf;
             if ($mf->isPartitionKey()) {
                 $pk = $mf;
-            }
-            if ($mf->isSortKey()) {
+            } elseif ($mf->isSortKey()) {
                 $sk = $mf;
             }
         }
+
+        $this->fields = $itemFields;
 
         if (null === $pk) {
             throw new \InvalidArgumentException('Partition key not found');
         }
 
-        return new self($item->newInstance(), $className, $itemFields, $pk, $sk);
+        $this->partitionKeyProperty = $pk;
+        $this->sortKeyProperty = $sk;
     }
 
     public function getTableName(): string
@@ -115,10 +118,12 @@ readonly class MappedItem
     public function getKeyFieldsValues(object $object, FieldParser $parser): array
     {
         $pk = $this->getPartitionKey();
-        $key = [$pk->fieldName => $parser->toDynamoDb(
-            $pk,
-            $pk->property->getValue($object)
-        )];
+        $key = [
+            $pk->fieldName => $parser->toDynamoDb(
+                $pk,
+                $pk->property->getValue($object)
+            ),
+        ];
 
         $sk = $this->getSortKey();
 
@@ -138,10 +143,12 @@ readonly class MappedItem
     public function generateKeyFieldQuery(FieldParser $parser, mixed $pk, mixed $sk = null): array
     {
         $pkField = $this->getPartitionKey();
-        $key = [$pkField->fieldName => $parser->toDynamoDb(
-            $pkField,
-            $pk
-        )];
+        $key = [
+            $pkField->fieldName => $parser->toDynamoDb(
+                $pkField,
+                $pk
+            ),
+        ];
 
         $skField = $this->getSortKey();
 

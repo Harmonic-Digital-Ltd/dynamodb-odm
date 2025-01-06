@@ -27,7 +27,7 @@ use HarmonicDigital\DynamodbOdm\Attribute\Item;
 use HarmonicDigital\DynamodbOdm\Attribute\PartitionKey;
 use HarmonicDigital\DynamodbOdm\Attribute\SortKey;
 
-#[Item(tableName: 'my_table')]
+#[Item(tableName: 'my_table', partitionKeyPrefix: 'MYPREFIX#')]
 class MyItem
 {
     #[Field] // Type 'S'
@@ -37,7 +37,7 @@ class MyItem
     #[Field(name: 'full_name')] // Use a different name for the DynamoDB Field, type S implied
     private string $name;
 
-    #[Field('N')] // Type 'N'
+    #[Field] // Type 'N'
     #[SortKey] // Use as the sort key
     private int $age;
     

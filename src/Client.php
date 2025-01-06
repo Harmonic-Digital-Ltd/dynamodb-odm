@@ -93,6 +93,6 @@ class Client
     /** @param class-string $class */
     private function getMappedItem(string $class): MappedItem
     {
-        return $this->mappedItems[$class] ??= MappedItem::fromClass($class);
+        return $this->mappedItems[$class] ??= new MappedItem($class);
     }
 }

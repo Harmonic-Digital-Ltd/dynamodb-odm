@@ -22,6 +22,7 @@ readonly class MappedField
     public function __construct(
         public Field $field,
         public \ReflectionProperty $property,
+        public MappedItem $mappedItem,
     ) {
         $this->propertyName = $property->getName();
         $this->fieldName = $this->field->name ?? $this->propertyName;
@@ -43,15 +44,23 @@ readonly class MappedField
 
     public function transformToDatabaseValue(mixed $value): mixed
     {
-        if (null === $this->transformer) {
-            return $value;
+        if (null !== $this->transformer) {
+            $value = $this->transformer->toDatabase($value, $this->property);
         }
 
-        return $this->transformer->toDatabase($value, $this->property);
+        if ($this->isPartitionKey() && null !== $this->mappedItem->item->partitionKeyPrefix) {
+            $value = $this->mappedItem->item->partitionKeyPrefix.$value;
+        }
+
+        return $value;
     }
 
     public function transformFromDatabaseValue(mixed $value): mixed
     {
+        if ($this->isPartitionKey() && null !== $this->mappedItem->item->partitionKeyPrefix) {
+            $value = \str_replace($this->mappedItem->item->partitionKeyPrefix, '', $value);
+        }
+
         if (null === $this->transformer) {
             return $value;
         }

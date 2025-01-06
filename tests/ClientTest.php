@@ -53,7 +53,7 @@ class ClientTest extends TestCase
                     [
                         'TableName' => 'test',
                         'Item' => [
-                            'id' => ['S' => 'id'],
+                            'id' => ['S' => 'PREFIX#id'],
                             'name' => ['S' => 'name'],
                             'age' => ['N' => '30'],
                             'float' => ['N' => '3.14'],
@@ -89,7 +89,7 @@ class ClientTest extends TestCase
                     [
                         'TableName' => 'test',
                         'Key' => [
-                            'id' => ['S' => 'id'],
+                            'id' => ['S' => 'PREFIX#id'],
                             'age' => ['N' => '30'],
                         ],
                     ],
@@ -110,7 +110,7 @@ class ClientTest extends TestCase
                     [
                         'TableName' => 'test',
                         'Key' => [
-                            'id' => ['S' => 'id'],
+                            'id' => ['S' => 'PREFIX#id'],
                             'age' => ['N' => '30'],
                         ],
                     ],
@@ -118,7 +118,7 @@ class ClientTest extends TestCase
             )
             ->willReturn([
                 'Item' => [
-                    'id' => ['S' => 'id'],
+                    'id' => ['S' => 'PREFIX#id'],
                     'name' => ['S' => 'name'],
                     'age' => ['N' => '30'],
                     'nullable' => ['NULL' => true],
