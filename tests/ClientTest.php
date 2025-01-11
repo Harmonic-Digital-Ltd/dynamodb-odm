@@ -8,6 +8,9 @@ use Aws\DynamoDb\BinaryValue;
 use Aws\DynamoDb\DynamoDbClient;
 use HarmonicDigital\DynamodbOdm\Attribute\Field;
 use HarmonicDigital\DynamodbOdm\Attribute\Item;
+use HarmonicDigital\DynamodbOdm\Attribute\Key;
+use HarmonicDigital\DynamodbOdm\Attribute\PartitionKey;
+use HarmonicDigital\DynamodbOdm\Attribute\SortKey;
 use HarmonicDigital\DynamodbOdm\Client;
 use HarmonicDigital\DynamodbOdm\Parser\FieldParser;
 use HarmonicDigital\DynamodbOdm\Parser\MappedField;
@@ -31,6 +34,9 @@ use PHPUnit\Framework\TestCase;
 #[UsesClass(TestObject::class)]
 #[UsesClass(Field::class)]
 #[UsesClass(Item::class)]
+#[UsesClass(Key::class)]
+#[UsesClass(PartitionKey::class)]
+#[UsesClass(SortKey::class)]
 class ClientTest extends TestCase
 {
     private Client $client;
