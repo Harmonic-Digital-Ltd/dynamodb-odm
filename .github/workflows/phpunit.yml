@@ -1,0 +1,39 @@
+name: Run PHPUnit Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  phpunit-test:
+    strategy:
+      matrix:
+        php-version: [8.2, 8.3, 8.4]
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Setup PHP with the specified version
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+
+      # Install dependencies
+      - name: Install dependencies
+        run: composer install --no-progress --no-suggest --prefer-dist
+
+      # Run PHPUnit for tests
+      - name: Run PHPUnit tests
+        run: |
+          if [[ ${{ matrix.php-version }} == '8.4' ]]; then
+            # For PHP 8.4, add code coverage
+            ./vendor/bin/phpunit --coverage-text
+          else
+            ./vendor/bin/phpunit
+          fi
