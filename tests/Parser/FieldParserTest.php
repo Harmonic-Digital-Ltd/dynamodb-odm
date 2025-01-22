@@ -4,11 +4,18 @@ declare(strict_types=1);
 
 namespace HarmonicDigital\DynamodbOdm\Test\Parser;
 
+use HarmonicDigital\DynamodbOdm\Attribute\Field;
+use HarmonicDigital\DynamodbOdm\Attribute\Item;
+use HarmonicDigital\DynamodbOdm\Attribute\Key;
+use HarmonicDigital\DynamodbOdm\Attribute\PartitionKey;
+use HarmonicDigital\DynamodbOdm\Attribute\SortKey;
 use HarmonicDigital\DynamodbOdm\Parser\FieldParser;
+use HarmonicDigital\DynamodbOdm\Parser\MappedField;
 use HarmonicDigital\DynamodbOdm\Parser\MappedItem;
 use HarmonicDigital\DynamodbOdm\Test\Model\EmbeddedItem;
 use HarmonicDigital\DynamodbOdm\Test\Model\TestEmbeddedObject;
 use HarmonicDigital\DynamodbOdm\Test\Model\TestObject;
+use HarmonicDigital\DynamodbOdm\Transformer\DateTimeTransformer;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\UsesClass;
@@ -22,6 +29,13 @@ use PHPUnit\Framework\TestCase;
 #[UsesClass(TestObject::class)]
 #[UsesClass(TestEmbeddedObject::class)]
 #[UsesClass(EmbeddedItem::class)]
+#[UsesClass(Field::class)]
+#[UsesClass(Item::class)]
+#[UsesClass(Key::class)]
+#[UsesClass(PartitionKey::class)]
+#[UsesClass(SortKey::class)]
+#[UsesClass(MappedField::class)]
+#[UsesClass(DateTimeTransformer::class)]
 class FieldParserTest extends TestCase
 {
     private FieldParser $fieldParser;
