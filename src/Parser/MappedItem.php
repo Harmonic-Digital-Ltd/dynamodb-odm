@@ -12,7 +12,7 @@ use HarmonicDigital\DynamodbOdm\Attribute\Item;
  *
  * @template T of object
  */
-readonly class MappedItem
+final class MappedItem
 {
     public Item $item;
 

@@ -11,7 +11,7 @@ use HarmonicDigital\DynamodbOdm\Attribute\PartitionKey;
 use HarmonicDigital\DynamodbOdm\Attribute\SortKey;
 use HarmonicDigital\DynamodbOdm\Transformer\Transformer;
 
-readonly class MappedField
+final class MappedField
 {
     public string $propertyName;
     public string $fieldName;
@@ -39,6 +39,7 @@ readonly class MappedField
                 break;
             }
         }
+
         $this->transformer = $t;
     }
 
@@ -46,6 +47,10 @@ readonly class MappedField
     {
         if (null !== $this->transformer) {
             $value = $this->transformer->toDatabase($value, $this->property);
+        }
+
+        if (Field::TYPE_B === $this->getType($value) && !$value instanceof BinaryValue) {
+            $value = new BinaryValue($value);
         }
 
         if ($this->isPartitionKey() && null !== $this->mappedItem->item->partitionKeyPrefix) {

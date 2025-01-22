@@ -4,19 +4,25 @@ declare(strict_types=1);
 
 namespace HarmonicDigital\DynamodbOdm\Parser;
 
+use Aws\DynamoDb\BinaryValue;
 use Aws\DynamoDb\Marshaler;
 use HarmonicDigital\DynamodbOdm\Attribute\Field;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
 readonly class FieldParser
 {
     public function __construct(
         private Marshaler $marshaller = new Marshaler(),
+        public ObjectNormalizer $normalizer = new ObjectNormalizer(),
     ) {}
 
     /** @return array<Field::TYPE_*, mixed> */
     public function toDynamoDb(MappedField $field, mixed $value): array
     {
         $value = $field->transformToDatabaseValue($value) ?? $value;
+        if (\is_object($value) && !$value instanceof BinaryValue) {
+            $value = $this->normalizer->normalize($value);
+        }
 
         return match ($field->getType($value)) {
             Field::TYPE_SS => $this->parseStringSet($value),

@@ -7,19 +7,19 @@ namespace HarmonicDigital\DynamodbOdm;
 use Aws\DynamoDb\DynamoDbClient;
 use HarmonicDigital\DynamodbOdm\Parser\FieldParser;
 use HarmonicDigital\DynamodbOdm\Parser\MappedItem;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
 
 class Client
 {
     /** @var array<class-string, MappedItem> */
     private array $mappedItems = [];
-    private ObjectNormalizer $normalizer;
+    private Serializer $serializer;
 
     public function __construct(
         private DynamoDbClient $dynamoDbClient,
         private FieldParser $fieldParser = new FieldParser(),
     ) {
-        $this->normalizer = new ObjectNormalizer();
+        $this->serializer = new Serializer([$this->fieldParser->normalizer]);
     }
 
     public function put(object $object): void
@@ -84,7 +84,7 @@ class Client
      */
     private function parseItem(array $item, MappedItem $mappedItem): object
     {
-        return $this->normalizer->denormalize(
+        return $this->serializer->denormalize(
             $this->fieldParser->dynamoDbToPropertyArray($item, $mappedItem),
             $mappedItem->className
         );

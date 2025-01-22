@@ -15,6 +15,8 @@ use HarmonicDigital\DynamodbOdm\Client;
 use HarmonicDigital\DynamodbOdm\Parser\FieldParser;
 use HarmonicDigital\DynamodbOdm\Parser\MappedField;
 use HarmonicDigital\DynamodbOdm\Parser\MappedItem;
+use HarmonicDigital\DynamodbOdm\Test\Model\EmbeddedItem;
+use HarmonicDigital\DynamodbOdm\Test\Model\TestEmbeddedObject;
 use HarmonicDigital\DynamodbOdm\Test\Model\TestObject;
 use HarmonicDigital\DynamodbOdm\Test\Model\TestObjectTwo;
 use HarmonicDigital\DynamodbOdm\Transformer\DateTimeTransformer;
@@ -65,6 +67,7 @@ class ClientTest extends TestCase
                             'float' => ['N' => '3.14'],
                             'intAsFloat' => ['N' => '4'],
                             'binary' => ['B' => 'binary'],
+                            'binaryString' => ['B' => 'binaryString'],
                             'nullable' => ['NULL' => true],
                             'bool' => ['BOOL' => true],
                             'map' => ['M' => ['key' => ['S' => 'value'], 'hello' => ['S' => 'world']]],
@@ -130,6 +133,7 @@ class ClientTest extends TestCase
                     'nullable' => ['NULL' => true],
                     'bool' => ['BOOL' => true],
                     'binary' => ['B' => 'binary'],
+                    'binaryString' => ['B' => 'binaryString'],
                     'map' => ['M' => ['key' => ['S' => 'value'], 'hello' => ['S' => 'world']]],
                     'list' => ['L' => [['S' => 'one'], ['N' => '2'], ['BOOL' => true], ['N' => '4.5']]],
                     'stringSet' => ['SS' => ['one', 'two', 'three']],
@@ -150,6 +154,7 @@ class ClientTest extends TestCase
         $this->assertSame(4.0, $result->getIntAsFloat());
         $this->assertSame('unmapped', $result->getUnmapped());
         $this->assertSame('binary', $result->getBinary()->__toString());
+        $this->assertSame('binaryString', $result->getBinaryString());
         $this->assertEquals([new BinaryValue('binary1'), new BinaryValue('binary2')], $result->getBinarySet());
         $this->assertNull($result->getNullable());
         $this->assertTrue($result->isBool());
@@ -158,6 +163,60 @@ class ClientTest extends TestCase
         $this->assertSame(['one', 'two', 'three'], $result->getStringSet());
         $this->assertSame([1, 2.5, -3], $result->getNumberSet());
         $this->assertEquals(new \DateTimeImmutable('2021-01-01T00:00:00.000000Z'), $result->getDateTimeImmutable());
+    }
+
+    public function testPutItemWithEmbedded(): void
+    {
+        $item = new TestEmbeddedObject('id', new EmbeddedItem('name', 30));
+        $this->dynamoDbClient->expects($this->once())
+            ->method('__call')
+            ->with(
+                'putItem',
+                [
+                    [
+                        'TableName' => 'TestEmbeddedObject',
+                        'Item' => [
+                            'id' => ['S' => 'id'],
+                            'embeddedItem' => ['M' => ['name' => ['S' => 'name'], 'value' => ['N' => '30']]],
+                        ],
+                    ],
+                ],
+            )
+        ;
+
+        $this->client->put($item);
+    }
+
+    public function testGetItemEmbedded(): void
+    {
+        $this->dynamoDbClient->expects($this->once())
+            ->method('__call')
+            ->with(
+                'getItem',
+                [
+                    [
+                        'TableName' => 'TestEmbeddedObject',
+                        'Key' => [
+                            'id' => ['S' => 'id'],
+                        ],
+                    ],
+                ]
+            )
+            ->willReturn([
+                'Item' => [
+                    'id' => ['S' => 'id'],
+                    'embeddedItem' => ['M' => ['name' => ['S' => 'name'], 'value' => ['N' => '30']]],
+                ],
+            ])
+        ;
+
+        /** @var TestEmbeddedObject $result */
+        $result = $this->client->getItem(TestEmbeddedObject::class, 'id');
+        $this->assertInstanceOf(TestEmbeddedObject::class, $result);
+        $this->assertSame('id', $result->id);
+        $this->assertInstanceOf(EmbeddedItem::class, $result->embeddedItem);
+        $this->assertSame('name', $result->embeddedItem->name);
+        $this->assertSame(30, $result->embeddedItem->value);
     }
 
     public function testCreateTable(): void

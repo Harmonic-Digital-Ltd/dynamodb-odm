@@ -1,0 +1,15 @@
+<?php
+declare(strict_types=1);
+
+/**
+ * @template T as object
+ */
+class ReflectionNamedType
+{
+    /**
+     * @return class-string<T>
+     */
+    public function getName(): string
+    {
+    }
+}

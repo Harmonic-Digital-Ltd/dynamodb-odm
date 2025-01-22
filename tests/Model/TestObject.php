@@ -38,6 +38,9 @@ class TestObject
     #[Field]
     private BinaryValue $binary;
 
+    #[Field(type: 'B')]
+    private string $binaryString = 'binaryString';
+
     #[Field]
     private array $map = ['key' => 'value', 'hello' => 'world'];
 
@@ -148,5 +151,10 @@ class TestObject
     public function setName(string $name): void
     {
         $this->name = $name;
+    }
+
+    public function getBinaryString(): string
+    {
+        return $this->binaryString;
     }
 }
