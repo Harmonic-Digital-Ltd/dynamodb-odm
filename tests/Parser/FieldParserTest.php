@@ -63,6 +63,7 @@ class FieldParserTest extends TestCase
                 'age' => ['N' => '30'],
                 'float' => ['N' => '3.14'],
                 'intAsFloat' => ['N' => '4'],
+                'numericString' => ['N' => '123.456789'],
                 'nullable' => ['NULL' => true],
                 'bool' => ['BOOL' => true],
                 'binary' => ['B' => 'binary'],

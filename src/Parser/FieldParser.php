@@ -6,6 +6,7 @@ namespace HarmonicDigital\DynamodbOdm\Parser;
 
 use Aws\DynamoDb\BinaryValue;
 use Aws\DynamoDb\Marshaler;
+use Aws\DynamoDb\NumberValue;
 use HarmonicDigital\DynamodbOdm\Attribute\Field;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
@@ -20,7 +21,7 @@ readonly class FieldParser
     public function toDynamoDb(MappedField $field, mixed $value): array
     {
         $value = $field->transformToDatabaseValue($value) ?? $value;
-        if (\is_object($value) && !$value instanceof BinaryValue) {
+        if (\is_object($value) && !$value instanceof BinaryValue && !$value instanceof NumberValue) {
             $value = $this->normalizer->normalize($value);
         }
 

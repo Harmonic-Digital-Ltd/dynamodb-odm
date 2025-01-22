@@ -66,6 +66,7 @@ class ClientTest extends TestCase
                             'age' => ['N' => '30'],
                             'float' => ['N' => '3.14'],
                             'intAsFloat' => ['N' => '4'],
+                            'numericString' => ['N' => '123.456789'],
                             'binary' => ['B' => 'binary'],
                             'binaryString' => ['B' => 'binaryString'],
                             'nullable' => ['NULL' => true],
@@ -130,6 +131,9 @@ class ClientTest extends TestCase
                     'id' => ['S' => 'PREFIX#id'],
                     'name' => ['S' => 'name'],
                     'age' => ['N' => '30'],
+                    'float' => ['N' => '3.14'],
+                    'intAsFloat' => ['N' => '4'],
+                    'numericString' => ['N' => '123.456789'],
                     'nullable' => ['NULL' => true],
                     'bool' => ['BOOL' => true],
                     'binary' => ['B' => 'binary'],
@@ -159,6 +163,9 @@ class ClientTest extends TestCase
         $this->assertNull($result->getNullable());
         $this->assertTrue($result->isBool());
         $this->assertSame(['key' => 'value', 'hello' => 'world'], $result->getMap());
+        $this->assertSame(4.0, $result->getIntAsFloat());
+        $this->assertSame(3.14, $result->getFloat());
+        $this->assertSame('123.456789', $result->getNumericString());
         $this->assertSame(['one', 2, true, 4.5], $result->getList());
         $this->assertSame(['one', 'two', 'three'], $result->getStringSet());
         $this->assertSame([1, 2.5, -3], $result->getNumberSet());

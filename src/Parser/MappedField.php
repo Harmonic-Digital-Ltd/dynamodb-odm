@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace HarmonicDigital\DynamodbOdm\Parser;
 
 use Aws\DynamoDb\BinaryValue;
+use Aws\DynamoDb\NumberValue;
 use HarmonicDigital\DynamodbOdm\Attribute\Field;
 use HarmonicDigital\DynamodbOdm\Attribute\Key;
 use HarmonicDigital\DynamodbOdm\Attribute\PartitionKey;
@@ -49,7 +50,13 @@ final class MappedField
             $value = $this->transformer->toDatabase($value, $this->property);
         }
 
-        if (Field::TYPE_B === $this->getType($value) && !$value instanceof BinaryValue) {
+        $type = $this->getType($value);
+
+        if (Field::TYPE_N === $type && \is_string($value)) {
+            $value = new NumberValue($value);
+        }
+
+        if (Field::TYPE_B === $type && !$value instanceof BinaryValue) {
             $value = new BinaryValue($value);
         }
 

@@ -29,6 +29,9 @@ class TestObject
     #[Field]
     private float $intAsFloat = 4;
 
+    #[Field(type: 'N')]
+    private string $numericString = '123.456789';
+
     #[Field]
     private ?string $nullable = null;
 
@@ -156,5 +159,10 @@ class TestObject
     public function getBinaryString(): string
     {
         return $this->binaryString;
+    }
+
+    public function getNumericString(): string
+    {
+        return $this->numericString;
     }
 }
