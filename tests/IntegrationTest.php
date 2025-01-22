@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace HarmonicDigital\DynamodbOdm\Test;
 
 use Aws\DynamoDb\DynamoDbClient;
-use HarmonicDigital\DynamodbOdm\Client;
+use HarmonicDigital\DynamodbOdm\ItemManager;
 use HarmonicDigital\DynamodbOdm\Test\Model\EmbeddedItem;
 use HarmonicDigital\DynamodbOdm\Test\Model\TestEmbeddedObject;
 use HarmonicDigital\DynamodbOdm\Test\Model\TestObject;
@@ -15,10 +15,10 @@ use PHPUnit\Framework\TestCase;
 /**
  * @internal
  */
-#[CoversClass(Client::class)]
+#[CoversClass(ItemManager::class)]
 class IntegrationTest extends TestCase
 {
-    private Client $client;
+    private ItemManager $client;
 
     protected function setUp(): void
     {
@@ -39,7 +39,7 @@ class IntegrationTest extends TestCase
             ],
         ]);
 
-        $this->client = new Client($client);
+        $this->client = new ItemManager($client);
     }
 
     public function testCreatePutAndGet(): void

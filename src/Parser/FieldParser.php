@@ -10,11 +10,11 @@ use Aws\DynamoDb\NumberValue;
 use HarmonicDigital\DynamodbOdm\Attribute\Field;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
-readonly class FieldParser
+final readonly class FieldParser implements FieldParserInterface
 {
     public function __construct(
         private Marshaler $marshaller = new Marshaler(),
-        public ObjectNormalizer $normalizer = new ObjectNormalizer(),
+        private ObjectNormalizer $normalizer = new ObjectNormalizer(),
     ) {}
 
     /** @return array<Field::TYPE_*, mixed> */
@@ -47,6 +47,11 @@ readonly class FieldParser
         }
 
         return $result;
+    }
+
+    public function getNormalizer(): ObjectNormalizer
+    {
+        return $this->normalizer;
     }
 
     /** @return array<Field::TYPE_BS, list<string>> */

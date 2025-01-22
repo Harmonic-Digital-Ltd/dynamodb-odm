@@ -6,10 +6,11 @@ namespace HarmonicDigital\DynamodbOdm;
 
 use Aws\DynamoDb\DynamoDbClient;
 use HarmonicDigital\DynamodbOdm\Parser\FieldParser;
+use HarmonicDigital\DynamodbOdm\Parser\FieldParserInterface;
 use HarmonicDigital\DynamodbOdm\Parser\MappedItem;
 use Symfony\Component\Serializer\Serializer;
 
-class Client
+final class ItemManager implements ItemManagerInterface
 {
     /** @var array<class-string, MappedItem> */
     private array $mappedItems = [];
@@ -17,9 +18,9 @@ class Client
 
     public function __construct(
         private DynamoDbClient $dynamoDbClient,
-        private FieldParser $fieldParser = new FieldParser(),
+        private FieldParserInterface $fieldParser = new FieldParser(),
     ) {
-        $this->serializer = new Serializer([$this->fieldParser->normalizer]);
+        $this->serializer = new Serializer([$this->fieldParser->getNormalizer()]);
     }
 
     public function put(object $object): void

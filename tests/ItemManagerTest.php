@@ -11,7 +11,7 @@ use HarmonicDigital\DynamodbOdm\Attribute\Item;
 use HarmonicDigital\DynamodbOdm\Attribute\Key;
 use HarmonicDigital\DynamodbOdm\Attribute\PartitionKey;
 use HarmonicDigital\DynamodbOdm\Attribute\SortKey;
-use HarmonicDigital\DynamodbOdm\Client;
+use HarmonicDigital\DynamodbOdm\ItemManager;
 use HarmonicDigital\DynamodbOdm\Parser\FieldParser;
 use HarmonicDigital\DynamodbOdm\Parser\MappedField;
 use HarmonicDigital\DynamodbOdm\Parser\MappedItem;
@@ -28,7 +28,7 @@ use PHPUnit\Framework\TestCase;
 /**
  * @internal
  */
-#[CoversClass(Client::class)]
+#[CoversClass(ItemManager::class)]
 #[CoversClass(FieldParser::class)]
 #[CoversClass(MappedItem::class)]
 #[CoversClass(MappedField::class)]
@@ -39,15 +39,15 @@ use PHPUnit\Framework\TestCase;
 #[UsesClass(Key::class)]
 #[UsesClass(PartitionKey::class)]
 #[UsesClass(SortKey::class)]
-class ClientTest extends TestCase
+class ItemManagerTest extends TestCase
 {
-    private Client $client;
+    private ItemManager $client;
     private DynamoDbClient&MockObject $dynamoDbClient;
 
     protected function setUp(): void
     {
         $this->dynamoDbClient = $this->createMock(DynamoDbClient::class);
-        $this->client = new Client($this->dynamoDbClient);
+        $this->client = new ItemManager($this->dynamoDbClient);
     }
 
     public function testPut(): void

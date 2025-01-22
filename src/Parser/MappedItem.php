@@ -98,7 +98,7 @@ final class MappedItem
     /**
      * @return array<string, array<string, mixed>>
      */
-    public function getFieldValues(object $object, FieldParser $parser): array
+    public function getFieldValues(object $object, FieldParserInterface $parser): array
     {
         $itemFields = [];
 
@@ -115,7 +115,7 @@ final class MappedItem
     /**
      * @return array<string, mixed>
      */
-    public function getKeyFieldsValues(object $object, FieldParser $parser): array
+    public function getKeyFieldsValues(object $object, FieldParserInterface $parser): array
     {
         $pk = $this->getPartitionKey();
         $key = [
@@ -140,7 +140,7 @@ final class MappedItem
     /**
      * @return array<string, array<string, mixed>>
      */
-    public function generateKeyFieldQuery(FieldParser $parser, mixed $pk, mixed $sk = null): array
+    public function generateKeyFieldQuery(FieldParserInterface $parser, mixed $pk, mixed $sk = null): array
     {
         $pkField = $this->getPartitionKey();
         $key = [
