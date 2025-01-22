@@ -199,3 +199,53 @@ class MyItem
     // Getters and setters...
 }
 ```
+
+## Embedded Items
+
+Items which implement mappable can be embedded and will be serialized into DynamoDB Maps.
+
+```php
+<?php
+
+use HarmonicDigital\DynamodbOdm\Attribute\Field;
+use HarmonicDigital\DynamodbOdm\Attribute\Item;
+use HarmonicDigital\DynamodbOdm\Attribute\PartitionKey;
+use HarmonicDigital\DynamodbOdm\Transformer\Mapable;
+
+class EmbeddedItem implements Mapable
+{
+    public static function fromMap(array $data): self
+    {
+        return new self(
+            $data['name'],
+            $data['value'],
+        );
+    }
+    
+    public function __construct(
+        public string $name,
+        public int $value,
+    ) {}
+
+    public function toMap(): array
+    {
+        return [
+            'name' => $this->name,
+            'value' => $this->value,
+        ];
+    }
+}
+
+#[Item]
+class TestEmbeddedObject
+{
+    public function __construct(
+        #[Field]
+        #[PartitionKey]
+        public string $id,
+        #[Field]
+        public EmbeddedItem $embeddedItem,
+    ) {}
+}
+
+```
