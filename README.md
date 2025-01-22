@@ -4,6 +4,17 @@
 
 This project provides an Object-Document Mapper (ODM) for DynamoDB, allowing you to map PHP objects to DynamoDB items and vice versa.
 
+## Features
+
+* Automatic table and key creation.
+* Fetch item by class and key(s)
+* Insert/update item by put method
+* Delete an item
+* Embedded object support
+* Custom transformers to convert data to and from database formats
+* Handling of strings to numeric and binary formats
+* Native handling of sets (number, binary and string)
+
 ## Installation
 
 To install the package, use Composer:
@@ -70,7 +81,7 @@ To interact with DynamoDB, use the `Client` class:
 <?php
 
 use Aws\DynamoDb\DynamoDbClient;
-use HarmonicDigital\DynamodbOdm\Client;
+use HarmonicDigital\DynamodbOdm\ItemManager;
 use App\Test\Model\MyItem;
 
 $dynamoDbClient = new DynamoDbClient([
@@ -82,27 +93,27 @@ $dynamoDbClient = new DynamoDbClient([
     ],
 ]);
 
-$client = new Client($dynamoDbClient);
+$itemManager = new ItemManager($dynamoDbClient);
 
 // Create the table
-$client->createTable(MyItem::class);
+$itemManager->createTable(MyItem::class);
 
 // Create a new item
 $item = new MyItem('id', 'My Full Name', 30, ['string1', 'string2']);
 
-$client->put($item);
+$itemManager->put($item);
 
 // Retrieve an item
-$result = $client->getItem(MyItem::class, 'id', 30);
+$result = $itemManager->getItem(MyItem::class, 'id', 30);
 if ($result !== null) {
     echo $result->getName(); // Output: name
 }
 
 // Delete an item
-$client->delete($item);
+$itemManager->delete($item);
 
 // Create a table
-$client->createTable(MyItem::class);
+$itemManager->createTable(MyItem::class);
 ```
 
 ## Transformers
@@ -174,12 +185,19 @@ class MyItem
     #[SortKey] // Use as the sort key
     private int $age;
     
+    #[Field(type: 'N')] // Treats the string as a numeric-string
+    /** @var numeric-string */
+    private string $numericString;
+    
+    #[Field(type: 'B')] // Treats the string as a binary
+    private string $binaryString;
+    
     #[Field(type: 'SS')] // Force a string set for a string list
     /** @var list<string> */
     private array $stringList;
     
     #[Field]
-    #[DateTimeTransformer]
+    #[DateTimeTransformer] // Use the date-time transformer for database value storage
     private \DateTimeImmutable $createdAt;
     
     public function __construct(
