@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace HarmonicDigital\DynamodbOdm\Attribute;
 
 #[\Attribute(\Attribute::TARGET_PROPERTY)]
-readonly class Field
+final readonly class Field
 {
     public const TYPE_S = 'S'; // – String
     public const TYPE_N = 'N'; // – Number

@@ -7,7 +7,7 @@ namespace HarmonicDigital\DynamodbOdm\Transformer;
 use HarmonicDigital\DynamodbOdm\Transformer\Exception\TransformationException;
 
 #[\Attribute(\Attribute::TARGET_PROPERTY)]
-class DateTimeTransformer implements Transformer
+final class DateTimeTransformer implements Transformer
 {
     public function __construct(
         public string $format = 'U.u'

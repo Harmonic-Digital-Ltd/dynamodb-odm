@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace HarmonicDigital\DynamodbOdm\Attribute;
 
 #[\Attribute(\Attribute::TARGET_CLASS)]
-readonly class Item
+final readonly class Item
 {
     /**
      * @param null|string $tableName          The table name defaults to the class name

@@ -6,7 +6,7 @@ namespace HarmonicDigital\DynamodbOdm\Transformer;
 
 use HarmonicDigital\DynamodbOdm\Transformer\Exception\TransformationException;
 
-class MapableTransformer implements Transformer
+final class MapableTransformer implements Transformer
 {
     /** @phpstan-assert-if-true \ReflectionNamedType<Mapable> $type */
     public static function supportsType(?\ReflectionType $type): bool

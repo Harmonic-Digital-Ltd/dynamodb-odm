@@ -12,7 +12,7 @@ use HarmonicDigital\DynamodbOdm\Attribute\Item;
  *
  * @template T of object
  */
-final class MappedItem
+final readonly class MappedItem
 {
     public Item $item;
 
@@ -21,12 +21,10 @@ final class MappedItem
     private MappedField $partitionKeyProperty;
     private ?MappedField $sortKeyProperty;
 
-    /**
-     * @param class-string<T> $className
-     */
+    /** @param class-string<T> $className */
     public function __construct(
         public string $className,
-        private readonly FieldParserInterface $fieldParser,
+        private FieldParserInterface $fieldParser = new FieldParser(),
     ) {
         $class = new \ReflectionClass($className);
         $item = $class->getAttributes(Item::class)[0] ?? null;
@@ -76,7 +74,7 @@ final class MappedItem
 
     public function getTableName(): string
     {
-        return $this->item->tableName ?? basename(str_replace('\\', '/', $this->className));
+        return $this->item->tableName ?? \basename(\str_replace('\\', '/', $this->className));
     }
 
     /**

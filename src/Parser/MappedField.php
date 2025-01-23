@@ -12,7 +12,7 @@ use HarmonicDigital\DynamodbOdm\Attribute\PartitionKey;
 use HarmonicDigital\DynamodbOdm\Attribute\SortKey;
 use HarmonicDigital\DynamodbOdm\Transformer\Transformer;
 
-final class MappedField
+final readonly class MappedField
 {
     public string $propertyName;
     public string $fieldName;
