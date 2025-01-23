@@ -24,8 +24,10 @@ final class MappedItem
     /**
      * @param class-string<T> $className
      */
-    public function __construct(public string $className)
-    {
+    public function __construct(
+        public string $className,
+        private readonly FieldParserInterface $fieldParser,
+    ) {
         $class = new \ReflectionClass($className);
         $item = $class->getAttributes(Item::class)[0] ?? null;
         if (null === $item) {
@@ -98,12 +100,12 @@ final class MappedItem
     /**
      * @return array<string, array<string, mixed>>
      */
-    public function getFieldValues(object $object, FieldParserInterface $parser): array
+    public function getFieldValues(object $object): array
     {
         $itemFields = [];
 
         foreach ($this->fields as $field) {
-            $itemFields[$field->fieldName] = $parser->toDynamoDb(
+            $itemFields[$field->fieldName] = $this->fieldParser->toDynamoDb(
                 $field,
                 $field->property->getValue($object)
             );
@@ -115,11 +117,11 @@ final class MappedItem
     /**
      * @return array<string, mixed>
      */
-    public function getKeyFieldsValues(object $object, FieldParserInterface $parser): array
+    public function getKeyFieldsValues(object $object): array
     {
         $pk = $this->getPartitionKey();
         $key = [
-            $pk->fieldName => $parser->toDynamoDb(
+            $pk->fieldName => $this->fieldParser->toDynamoDb(
                 $pk,
                 $pk->property->getValue($object)
             ),
@@ -128,7 +130,7 @@ final class MappedItem
         $sk = $this->getSortKey();
 
         if (null !== $sk) {
-            $key[$sk->fieldName] = $parser->toDynamoDb(
+            $key[$sk->fieldName] = $this->fieldParser->toDynamoDb(
                 $sk,
                 $sk->property->getValue($object)
             );
@@ -140,11 +142,11 @@ final class MappedItem
     /**
      * @return array<string, array<string, mixed>>
      */
-    public function generateKeyFieldQuery(FieldParserInterface $parser, mixed $pk, mixed $sk = null): array
+    public function generateKeyFieldQuery(mixed $pk, mixed $sk = null): array
     {
         $pkField = $this->getPartitionKey();
         $key = [
-            $pkField->fieldName => $parser->toDynamoDb(
+            $pkField->fieldName => $this->fieldParser->toDynamoDb(
                 $pkField,
                 $pk
             ),
@@ -153,7 +155,7 @@ final class MappedItem
         $skField = $this->getSortKey();
 
         if (null !== $skField) {
-            $key[$skField->fieldName] = $parser->toDynamoDb(
+            $key[$skField->fieldName] = $this->fieldParser->toDynamoDb(
                 $skField,
                 $sk
             );

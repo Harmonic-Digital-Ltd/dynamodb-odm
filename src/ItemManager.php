@@ -29,7 +29,7 @@ final class ItemManager implements ItemManagerInterface
 
         $this->dynamoDbClient->putItem([
             'TableName' => $mappedItem->getTableName(),
-            'Item' => $mappedItem->getFieldValues($object, $this->fieldParser),
+            'Item' => $mappedItem->getFieldValues($object),
         ]);
     }
 
@@ -39,7 +39,7 @@ final class ItemManager implements ItemManagerInterface
 
         $this->dynamoDbClient->deleteItem([
             'TableName' => $mappedItem->getTableName(),
-            'Key' => $mappedItem->getKeyFieldsValues($item, $this->fieldParser),
+            'Key' => $mappedItem->getKeyFieldsValues($item),
         ]);
     }
 
@@ -59,7 +59,7 @@ final class ItemManager implements ItemManagerInterface
 
         $result = $this->dynamoDbClient->getItem([
             'TableName' => $mappedItem->getTableName(),
-            'Key' => $mappedItem->generateKeyFieldQuery($this->fieldParser, $partitionKey, $sortKey),
+            'Key' => $mappedItem->generateKeyFieldQuery($partitionKey, $sortKey),
         ]);
 
         if (!isset($result['Item'])) {
@@ -94,6 +94,6 @@ final class ItemManager implements ItemManagerInterface
     /** @param class-string $class */
     private function getMappedItem(string $class): MappedItem
     {
-        return $this->mappedItems[$class] ??= new MappedItem($class);
+        return $this->mappedItems[$class] ??= new MappedItem($class, $this->fieldParser);
     }
 }

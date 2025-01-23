@@ -48,8 +48,8 @@ class FieldParserTest extends TestCase
     #[DataProvider('objectDataProvider')]
     public function testId(object $object, array $expected)
     {
-        $mappedItem = new MappedItem($object::class);
-        $fields = $mappedItem->getFieldValues($object, $this->fieldParser);
+        $mappedItem = new MappedItem($object::class, $this->fieldParser);
+        $fields = $mappedItem->getFieldValues($object);
         $this->assertSame($expected, $fields);
     }
 

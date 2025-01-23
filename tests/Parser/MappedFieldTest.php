@@ -10,6 +10,7 @@ use HarmonicDigital\DynamodbOdm\Attribute\Item;
 use HarmonicDigital\DynamodbOdm\Attribute\Key;
 use HarmonicDigital\DynamodbOdm\Attribute\PartitionKey;
 use HarmonicDigital\DynamodbOdm\Attribute\SortKey;
+use HarmonicDigital\DynamodbOdm\Parser\FieldParserInterface;
 use HarmonicDigital\DynamodbOdm\Parser\MappedField;
 use HarmonicDigital\DynamodbOdm\Parser\MappedItem;
 use HarmonicDigital\DynamodbOdm\Test\Model\TestObject;
@@ -63,7 +64,7 @@ class MappedFieldTest extends TestCase
 
     public function testConstructor(): void
     {
-        $field = self::generateField('id');
+        $field = $this->generateField('id');
         $this->assertTrue($field->isPartitionKey());
         $this->assertFalse($field->isSortKey());
         $this->assertSame('id', $field->fieldName);
@@ -74,7 +75,7 @@ class MappedFieldTest extends TestCase
 
     public function testSortKey(): void
     {
-        $field = self::generateField('age');
+        $field = $this->generateField('age');
         $this->assertFalse($field->isPartitionKey());
         $this->assertTrue($field->isSortKey());
         $this->assertSame('age', $field->fieldName);
@@ -85,7 +86,7 @@ class MappedFieldTest extends TestCase
 
     public function testComplex(): void
     {
-        $field = self::generateField('map');
+        $field = $this->generateField('map');
         $this->assertFalse($field->isPartitionKey());
         $this->assertFalse($field->isSortKey());
         $this->assertSame('map', $field->fieldName);
@@ -94,14 +95,14 @@ class MappedFieldTest extends TestCase
         $this->assertNull($field->getKey());
     }
 
-    private static function generateField(string $property): MappedField
+    private function generateField(string $property): MappedField
     {
         $reflectionProperty = new \ReflectionProperty(TestObject::class, $property);
 
         return new MappedField(
             $reflectionProperty->getAttributes(Field::class)[0]->newInstance(),
             $reflectionProperty,
-            new MappedItem(TestObject::class),
+            new MappedItem(TestObject::class, $this->createMock(FieldParserInterface::class)),
         );
     }
 }
