@@ -194,6 +194,29 @@ class ItemManagerTest extends TestCase
         $this->client->put($item);
     }
 
+    public function testPutItemWithEmbeddedOverriddenTable(): void
+    {
+        $this->client->setTable(TestEmbeddedObject::class, 'overridden_table');
+        $item = new TestEmbeddedObject('id', new EmbeddedItem('name', 30));
+        $this->dynamoDbClient->expects($this->once())
+            ->method('__call')
+            ->with(
+                'putItem',
+                [
+                    [
+                        'TableName' => 'overridden_table',
+                        'Item' => [
+                            'id' => ['S' => 'id'],
+                            'embeddedItem' => ['M' => ['name' => ['S' => 'name'], 'value' => ['N' => '30']]],
+                        ],
+                    ],
+                ],
+            )
+        ;
+
+        $this->client->put($item);
+    }
+
     public function testGetItemEmbedded(): void
     {
         $this->dynamoDbClient->expects($this->once())

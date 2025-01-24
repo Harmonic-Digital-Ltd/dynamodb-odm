@@ -14,11 +14,13 @@ final class ItemManager implements ItemManagerInterface
 {
     /** @var array<class-string, MappedItem> */
     private array $mappedItems = [];
-    private Serializer $serializer;
+    private readonly Serializer $serializer;
 
+    /** @param array<class-string, string> $tableMap item to table mapper */
     public function __construct(
-        private DynamoDbClient $dynamoDbClient,
-        private FieldParserInterface $fieldParser = new FieldParser(),
+        private readonly DynamoDbClient $dynamoDbClient,
+        private array $tableMap = [],
+        private readonly FieldParserInterface $fieldParser = new FieldParser(),
     ) {
         $this->serializer = new Serializer([$this->fieldParser->getNormalizer()]);
     }
@@ -77,6 +79,15 @@ final class ItemManager implements ItemManagerInterface
     }
 
     /**
+     * @param class-string $item  The item
+     * @param string       $table The table to store the item in
+     */
+    public function setTable(string $item, string $table): void
+    {
+        $this->tableMap[$item] = $table;
+    }
+
+    /**
      * @template T as object
      *
      * @param MappedItem<T> $mappedItem
@@ -91,9 +102,19 @@ final class ItemManager implements ItemManagerInterface
         );
     }
 
-    /** @param class-string $class */
+    /**
+     * @template T as object
+     *
+     * @param class-string<T> $class
+     *
+     * @return MappedItem<T>
+     */
     private function getMappedItem(string $class): MappedItem
     {
-        return $this->mappedItems[$class] ??= new MappedItem($class, $this->fieldParser);
+        return $this->mappedItems[$class] ??= new MappedItem(
+            $class,
+            $this->fieldParser,
+            $this->tableMap[$class] ?? null
+        );
     }
 }

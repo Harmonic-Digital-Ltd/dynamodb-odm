@@ -20,4 +20,10 @@ interface ItemManagerInterface
     public function getItem(string $className, mixed $partitionKey, mixed $sortKey = null): ?object;
 
     public function createTable(string $className): void;
+
+    /**
+     * @param class-string $item  The item
+     * @param string       $table The table to store the item in
+     */
+    public function setTable(string $item, string $table): void;
 }

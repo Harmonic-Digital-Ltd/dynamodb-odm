@@ -15,6 +15,7 @@ use HarmonicDigital\DynamodbOdm\Attribute\Item;
 final readonly class MappedItem
 {
     public Item $item;
+    private \ReflectionClass $class;
 
     /** @var array<string, MappedField> */
     private array $fields;
@@ -25,16 +26,17 @@ final readonly class MappedItem
     public function __construct(
         public string $className,
         private FieldParserInterface $fieldParser = new FieldParser(),
+        private ?string $tableName = null,
     ) {
-        $class = new \ReflectionClass($className);
-        $item = $class->getAttributes(Item::class)[0] ?? null;
+        $this->class = new \ReflectionClass($className);
+        $item = $this->class->getAttributes(Item::class)[0] ?? null;
         if (null === $item) {
             throw new \InvalidArgumentException('Not a DynamoDb item');
         }
 
         $this->item = $item->newInstance();
 
-        $properties = $class->getProperties();
+        $properties = $this->class->getProperties();
 
         $itemFields = [];
         $pk = null;
@@ -74,7 +76,9 @@ final readonly class MappedItem
 
     public function getTableName(): string
     {
-        return $this->item->tableName ?? \basename(\str_replace('\\', '/', $this->className));
+        return $this->tableName
+            ?? $this->item->tableName
+            ?? $this->class->getShortName();
     }
 
     /**
@@ -178,25 +182,17 @@ final readonly class MappedItem
         ];
 
         foreach ($this->fields as $field) {
-            if ($field->isPartitionKey()) {
-                $params['KeySchema'][] = [
-                    'AttributeName' => $field->fieldName,
-                    'KeyType' => 'HASH',
-                ];
-                $params['AttributeDefinitions'][] = [
-                    'AttributeName' => $field->fieldName,
-                    'AttributeType' => $field->getType(),
-                ];
-            } elseif ($field->isSortKey()) {
-                $params['KeySchema'][] = [
-                    'AttributeName' => $field->fieldName,
-                    'KeyType' => 'RANGE',
-                ];
-                $params['AttributeDefinitions'][] = [
-                    'AttributeName' => $field->fieldName,
-                    'AttributeType' => $field->getType(),
-                ];
+            if (null === $key = $field->getKey()) {
+                continue;
             }
+            $params['KeySchema'][] = [
+                'AttributeName' => $field->fieldName,
+                'KeyType' => $key->keyType,
+            ];
+            $params['AttributeDefinitions'][] = [
+                'AttributeName' => $field->fieldName,
+                'AttributeType' => $field->getType(),
+            ];
         }
 
         return $params;

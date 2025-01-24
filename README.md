@@ -93,7 +93,10 @@ $dynamoDbClient = new DynamoDbClient([
     ],
 ]);
 
-$itemManager = new ItemManager($dynamoDbClient);
+$itemManager = new ItemManager(
+    $dynamoDbClient,
+    [MyItem::class => 'my_item_table'] // optional parameters if you want to override the table an item is stored in
+    );
 
 // Create the table
 $itemManager->createTable(MyItem::class);
