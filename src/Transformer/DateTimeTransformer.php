@@ -31,10 +31,12 @@ final class DateTimeTransformer implements Transformer
             $declaredType = $type->getName();
         }
 
-        if (\DateTime::class === $declaredType) {
-            return \DateTime::createFromFormat($this->format, $value);
+        $class = \DateTime::class === $declaredType ? \DateTime::class : \DateTimeImmutable::class;
+
+        if (is_int($value)) {
+            return $class::createFromFormat('U', (string) $value);
         }
 
-        return \DateTimeImmutable::createFromFormat($this->format, $value);
+        return $class::createFromFormat($this->format, (string) $value);
     }
 }

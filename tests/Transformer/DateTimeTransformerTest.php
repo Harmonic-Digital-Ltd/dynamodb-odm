@@ -62,7 +62,7 @@ class DateTimeTransformerTest extends TestCase
 
     #[DataProvider('timestampProvider')]
     public function testTransformToDatabase(
-        string $timestamp,
+        $timestamp,
         \DateTimeInterface $dateTime,
         \ReflectionProperty $property,
     ): void {
@@ -71,7 +71,7 @@ class DateTimeTransformerTest extends TestCase
 
     #[DataProvider('timestampProvider')]
     public function testTransformFromDatabase(
-        string $timestamp,
+        $timestamp,
         \DateTimeInterface $dateTime,
         \ReflectionProperty $property,
         string $className,
