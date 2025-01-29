@@ -48,18 +48,18 @@ class MapableTransformerTest extends TestCase
     }
 
     #[DataProvider('itemProvider')]
-    public function testToDatabase(mixed $object, array $databaseData, string $className, string $property)
+    public function testNormalize(object $object, array $databaseData, string $className, string $property)
     {
         $transformer = new MapableTransformer();
-        $result = $transformer->toDatabase($object, new \ReflectionProperty($className, $property));
+        $result = $transformer->normalize($object, $object::class);
         $this->assertSame($databaseData, $result);
     }
 
     #[DataProvider('itemProvider')]
-    public function testFromDatabase(mixed $object, array $databaseData, string $className, string $property)
+    public function testDenormalize(object $object, array $databaseData, string $className, string $property)
     {
         $transformer = new MapableTransformer();
-        $result = $transformer->fromDatabase($databaseData, new \ReflectionProperty($className, $property));
+        $result = $transformer->denormalize($databaseData, $object::class);
         $this->assertInstanceOf($object::class, $result);
         $this->assertEquals($object, $result);
     }

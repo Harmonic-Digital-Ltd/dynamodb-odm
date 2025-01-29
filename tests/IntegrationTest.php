@@ -8,6 +8,7 @@ use Aws\DynamoDb\DynamoDbClient;
 use HarmonicDigital\DynamodbOdm\ItemManager;
 use HarmonicDigital\DynamodbOdm\Test\Model\EmbeddedItem;
 use HarmonicDigital\DynamodbOdm\Test\Model\TestEmbeddedObject;
+use HarmonicDigital\DynamodbOdm\Test\Model\TestMultipleEmbeddedObject;
 use HarmonicDigital\DynamodbOdm\Test\Model\TestObject;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
@@ -71,6 +72,25 @@ class IntegrationTest extends TestCase
         $retrievedItem2->embeddedItem->name = 'new name';
         $this->client->put($retrievedItem2);
         $retrievedItem3 = $this->client->getItem(TestEmbeddedObject::class, 'id');
+        $this->assertEquals($retrievedItem2, $retrievedItem3);
+        $this->assertNotEquals($item, $retrievedItem3);
+        $this->client->delete($item);
+    }
+
+    public function testCreatePutAndGetWithEmbeddedCollection(): void
+    {
+        $this->client->createTable(TestMultipleEmbeddedObject::class);
+        $item = new TestMultipleEmbeddedObject('id');
+        $this->client->put($item);
+
+        /** @var TestMultipleEmbeddedObject $retrievedItem2 */
+        $retrievedItem2 = $this->client->getItem(TestMultipleEmbeddedObject::class, 'id');
+        $this->assertEquals($item, $retrievedItem2);
+        $this->assertEquals($item->embeddedItems->items, $retrievedItem2->embeddedItems->items);
+        $retrievedItem2->embeddedItems->items[0]->name = 'new name';
+        $this->assertNotEquals($item, $retrievedItem2);
+        $this->client->put($retrievedItem2);
+        $retrievedItem3 = $this->client->getItem(TestMultipleEmbeddedObject::class, 'id');
         $this->assertEquals($retrievedItem2, $retrievedItem3);
         $this->assertNotEquals($item, $retrievedItem3);
         $this->client->delete($item);

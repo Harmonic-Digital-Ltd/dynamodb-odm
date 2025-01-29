@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace HarmonicDigital\DynamodbOdm\Parser;
 
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 interface FieldParserInterface
 {
@@ -13,5 +14,5 @@ interface FieldParserInterface
 
     public function dynamoDbToPropertyArray(array $item, MappedItem $mappedItem): array;
 
-    public function getNormalizer(): ObjectNormalizer;
+    public function getNormalizer(): DenormalizerInterface&NormalizerInterface;
 }

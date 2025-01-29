@@ -104,7 +104,7 @@ final readonly class MappedField
 
         return match ($type->getName()) {
             'string' => Field::TYPE_S,
-            'int', 'float' => Field::TYPE_N,
+            'int', 'float', NumberValue::class => Field::TYPE_N,
             BinaryValue::class => Field::TYPE_B,
             'bool' => Field::TYPE_BOOL,
             default => null,

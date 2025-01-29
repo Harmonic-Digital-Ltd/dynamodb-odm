@@ -4,54 +4,12 @@ declare(strict_types=1);
 
 namespace HarmonicDigital\DynamodbOdm\Transformer;
 
-use HarmonicDigital\DynamodbOdm\Transformer\Exception\TransformationException;
 use Symfony\Component\Serializer\Exception\LogicException;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
-final class MapableTransformer implements Transformer, DenormalizerInterface
+final class MapableTransformer implements DenormalizerInterface, NormalizerInterface
 {
-    /** @phpstan-assert-if-true \ReflectionNamedType<Mapable> $type */
-    public static function supportsType(?\ReflectionType $type): bool
-    {
-        if (!$type instanceof \ReflectionNamedType) {
-            return false;
-        }
-
-        return self::isMapable($type->getName());
-    }
-
-    public function toDatabase(mixed $value, \ReflectionProperty $property): ?array
-    {
-        if (null === $value) {
-            return null;
-        }
-
-        if (!$value instanceof Mapable) {
-            throw new TransformationException('Value must implement Mapable');
-        }
-
-        return $value->toMap();
-    }
-
-    public function fromDatabase(null|array|bool|float|int|string $value, \ReflectionProperty $property): ?Mapable
-    {
-        if (null === $value) {
-            return null;
-        }
-
-        $type = $property->getType();
-
-        if (!self::supportsType($type)) {
-            throw new TransformationException('The type of the property must implement Mapable');
-        }
-
-        if (!\is_array($value)) {
-            throw new TransformationException('Value must be an array');
-        }
-
-        return $type->getName()::fromMap($value);
-    }
-
     public function supportsDenormalization(
         mixed $data,
         string $type,
@@ -75,6 +33,27 @@ final class MapableTransformer implements Transformer, DenormalizerInterface
         }
 
         return $type::fromMap($data);
+    }
+
+    public function normalize(
+        mixed $data,
+        ?string $format = null,
+        array $context = []
+    ): ?array {
+        if (null === $data) {
+            return null;
+        }
+
+        if (!$data instanceof Mapable) {
+            throw new LogicException('The type must implement Mapable');
+        }
+
+        return $data->toMap();
+    }
+
+    public function supportsNormalization(mixed $data, ?string $format = null, array $context = []): bool
+    {
+        return $data instanceof Mapable || null === $data;
     }
 
     /** @phpstan-assert-if-true class-string<Mapable> $className */
