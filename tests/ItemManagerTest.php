@@ -17,6 +17,7 @@ use HarmonicDigital\DynamodbOdm\Parser\MappedField;
 use HarmonicDigital\DynamodbOdm\Parser\MappedItem;
 use HarmonicDigital\DynamodbOdm\Test\Model\EmbeddedItem;
 use HarmonicDigital\DynamodbOdm\Test\Model\TestEmbeddedObject;
+use HarmonicDigital\DynamodbOdm\Test\Model\TestMultipleEmbeddedObject;
 use HarmonicDigital\DynamodbOdm\Test\Model\TestObject;
 use HarmonicDigital\DynamodbOdm\Test\Model\TestObjectTwo;
 use HarmonicDigital\DynamodbOdm\Transformer\DateTimeTransformer;
@@ -194,6 +195,37 @@ class ItemManagerTest extends TestCase
         $this->client->put($item);
     }
 
+    public function testPutItemWithEmbeddedCollection(): void
+    {
+        $item = new TestMultipleEmbeddedObject('id');
+        $this->dynamoDbClient->expects($this->once())
+            ->method('__call')
+            ->with(
+                'putItem',
+                [
+                    [
+                        'TableName' => 'TestMultipleEmbeddedObject',
+                        'Item' => [
+                            'id' => ['S' => 'id'],
+                            'embeddedItems' => [
+                                'M' => [
+                                    'items' => [
+                                        'L' => [
+                                            ['M' => ['name' => ['S' => 'First'], 'value' => ['N' => '1']]],
+                                            ['M' => ['name' => ['S' => 'Second'], 'value' => ['N' => '2']]],
+                                        ],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            )
+        ;
+
+        $this->client->put($item);
+    }
+
     public function testPutItemWithEmbeddedOverriddenTable(): void
     {
         $this->client->setTable(TestEmbeddedObject::class, 'overridden_table');
@@ -247,6 +279,46 @@ class ItemManagerTest extends TestCase
         $this->assertInstanceOf(EmbeddedItem::class, $result->embeddedItem);
         $this->assertSame('name', $result->embeddedItem->name);
         $this->assertSame(30, $result->embeddedItem->value);
+    }
+
+    public function testGetItemEmbeddedCollection(): void
+    {
+        $this->dynamoDbClient->expects($this->once())
+            ->method('__call')
+            ->with(
+                'getItem',
+                [
+                    [
+                        'TableName' => 'TestMultipleEmbeddedObject',
+                        'Key' => [
+                            'id' => ['S' => 'id'],
+                        ],
+                    ],
+                ]
+            )
+            ->willReturn([
+                'Item' => [
+                    'id' => ['S' => 'id'],
+                    'embeddedItems' => [
+                        'M' => [
+                            'items' => [
+                                'L' => [
+                                    ['M' => ['name' => ['S' => 'First'], 'value' => ['N' => '1']]],
+                                    ['M' => ['name' => ['S' => 'Second'], 'value' => ['N' => '2']]],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ])
+        ;
+
+        /** @var TestEmbeddedObject $result */
+        $result = $this->client->getItem(TestMultipleEmbeddedObject::class, 'id');
+        $expected = new TestMultipleEmbeddedObject('id');
+        $this->assertInstanceOf(TestMultipleEmbeddedObject::class, $result);
+        $this->assertSame('id', $result->id);
+        $this->assertEquals($expected->embeddedItems, $result->embeddedItems);
     }
 
     public function testCreateTable(): void

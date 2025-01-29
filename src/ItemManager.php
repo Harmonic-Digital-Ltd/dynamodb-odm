@@ -8,6 +8,7 @@ use Aws\DynamoDb\DynamoDbClient;
 use HarmonicDigital\DynamodbOdm\Parser\FieldParser;
 use HarmonicDigital\DynamodbOdm\Parser\FieldParserInterface;
 use HarmonicDigital\DynamodbOdm\Parser\MappedItem;
+use HarmonicDigital\DynamodbOdm\Transformer\MapableTransformer;
 use Symfony\Component\Serializer\Serializer;
 
 final class ItemManager implements ItemManagerInterface
@@ -22,7 +23,7 @@ final class ItemManager implements ItemManagerInterface
         private array $tableMap = [],
         private readonly FieldParserInterface $fieldParser = new FieldParser(),
     ) {
-        $this->serializer = new Serializer([$this->fieldParser->getNormalizer()]);
+        $this->serializer = new Serializer([new MapableTransformer(), $this->fieldParser->getNormalizer()]);
     }
 
     public function put(object $object): void

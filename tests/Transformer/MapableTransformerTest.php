@@ -6,8 +6,10 @@ namespace HarmonicDigital\DynamodbOdm\Test\Transformer;
 
 use HarmonicDigital\DynamodbOdm\Test\Model\EmbeddedItem;
 use HarmonicDigital\DynamodbOdm\Test\Model\TestEmbeddedObject;
+use HarmonicDigital\DynamodbOdm\Test\Model\TestMultipleEmbeddedObject;
 use HarmonicDigital\DynamodbOdm\Transformer\MapableTransformer;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -16,28 +18,49 @@ use PHPUnit\Framework\TestCase;
 #[CoversClass(MapableTransformer::class)]
 class MapableTransformerTest extends TestCase
 {
-    public function testToDatabase()
+    public static function itemProvider(): iterable
     {
-        $transformer = new MapableTransformer();
-        $expected = [
-            'name' => 'test',
-            'value' => 123,
+        yield 'EmbeddedItem' => [
+            new EmbeddedItem('test', 123),
+            ['name' => 'test', 'value' => 123],
+            TestEmbeddedObject::class,
+            'embeddedItem',
         ];
-        $data = new EmbeddedItem('test', 123);
-        $result = $transformer->toDatabase($data, new \ReflectionProperty(TestEmbeddedObject::class, 'embeddedItem'));
-        $this->assertSame($expected, $result);
+        $data = new TestMultipleEmbeddedObject('id');
+
+        yield 'EmbeddedItemCollection' => [
+            $data->embeddedItems,
+            [
+                'items' => [
+                    [
+                        'name' => 'First',
+                        'value' => 1,
+                    ],
+                    [
+                        'name' => 'Second',
+                        'value' => 2,
+                    ],
+                ],
+            ],
+            $data::class,
+            'embeddedItems',
+        ];
     }
 
-    public function testFromDatabase()
+    #[DataProvider('itemProvider')]
+    public function testToDatabase(mixed $object, array $databaseData, string $className, string $property)
     {
         $transformer = new MapableTransformer();
-        $data = [
-            'name' => 'test',
-            'value' => 123,
-        ];
-        $result = $transformer->fromDatabase($data, new \ReflectionProperty(TestEmbeddedObject::class, 'embeddedItem'));
-        $this->assertInstanceOf(EmbeddedItem::class, $result);
-        $this->assertSame('test', $result->name);
-        $this->assertSame(123, $result->value);
+        $result = $transformer->toDatabase($object, new \ReflectionProperty($className, $property));
+        $this->assertSame($databaseData, $result);
+    }
+
+    #[DataProvider('itemProvider')]
+    public function testFromDatabase(mixed $object, array $databaseData, string $className, string $property)
+    {
+        $transformer = new MapableTransformer();
+        $result = $transformer->fromDatabase($databaseData, new \ReflectionProperty($className, $property));
+        $this->assertInstanceOf($object::class, $result);
+        $this->assertEquals($object, $result);
     }
 }
