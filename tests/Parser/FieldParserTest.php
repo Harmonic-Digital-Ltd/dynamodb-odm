@@ -17,7 +17,6 @@ use HarmonicDigital\DynamodbOdm\Test\Model\TestEmbeddedObject;
 use HarmonicDigital\DynamodbOdm\Test\Model\TestObject;
 use HarmonicDigital\DynamodbOdm\Transformer\DateTimeTransformer;
 use HarmonicDigital\DynamodbOdm\Transformer\Normalizer\MapableNormalizer;
-use HarmonicDigital\DynamodbOdm\Transformer\Normalizer\TransformedNormalizer;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\UsesClass;
