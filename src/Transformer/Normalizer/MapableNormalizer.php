@@ -2,13 +2,14 @@
 
 declare(strict_types=1);
 
-namespace HarmonicDigital\DynamodbOdm\Transformer;
+namespace HarmonicDigital\DynamodbOdm\Transformer\Normalizer;
 
+use HarmonicDigital\DynamodbOdm\Transformer\Mapable;
 use Symfony\Component\Serializer\Exception\LogicException;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
-final class MapableTransformer implements DenormalizerInterface, NormalizerInterface
+final class MapableNormalizer implements DenormalizerInterface, NormalizerInterface
 {
     public function supportsDenormalization(
         mixed $data,
@@ -56,7 +57,11 @@ final class MapableTransformer implements DenormalizerInterface, NormalizerInter
         return $data instanceof Mapable || null === $data;
     }
 
-    /** @phpstan-assert-if-true class-string<Mapable> $className */
+    /**
+     * @phpstan-assert-if-true class-string<Mapable> $className
+     *
+     * @psalm-assert-if-true class-string<Mapable> $className
+     */
     private static function isMapable(string $className): bool
     {
         return is_subclass_of($className, Mapable::class);

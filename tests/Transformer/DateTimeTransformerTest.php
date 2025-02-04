@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace HarmonicDigital\DynamodbOdm\Test\Transformer;
 
+use Aws\DynamoDb\NumberValue;
 use HarmonicDigital\DynamodbOdm\Test\Model\DateTimeObject;
 use HarmonicDigital\DynamodbOdm\Transformer\DateTimeTransformer;
 use HarmonicDigital\DynamodbOdm\Transformer\Exception\TransformationException;
@@ -20,72 +21,91 @@ use PHPUnit\Framework\TestCase;
 #[UsesClass(DateTimeObject::class)]
 class DateTimeTransformerTest extends TestCase
 {
-    private DateTimeTransformer $transformer;
-
-    protected function setUp(): void
-    {
-        $this->transformer = new DateTimeTransformer();
-    }
-
     public static function timestampProvider(): iterable
     {
         $dateTimeObject = new DateTimeObject();
+        $defaultTransformer = new DateTimeTransformer();
 
         yield 'DateTime' => [
-            '1609459200.654321',
+            $defaultTransformer,
+            new NumberValue('1609459200.654321'),
             $dateTimeObject->dateTime,
             new \ReflectionProperty($dateTimeObject, 'dateTime'),
             \DateTime::class,
         ];
 
         yield 'DateTimeImmutable' => [
-            '1609545600.000000',
+            $defaultTransformer,
+            new NumberValue('1609545600.000000'),
             $dateTimeObject->dateTimeImmutable,
             new \ReflectionProperty($dateTimeObject, 'dateTimeImmutable'),
             \DateTimeImmutable::class,
         ];
 
         yield 'DateTimeInterface' => [
-            '1609632000.000000',
+            $defaultTransformer,
+            new NumberValue('1609632000.000000'),
             $dateTimeObject->dateTimeInterface,
             new \ReflectionProperty($dateTimeObject, 'dateTimeInterface'),
             \DateTimeImmutable::class,
         ];
 
         yield 'UndefinedDateTime' => [
-            '1609632000.000000',
+            $defaultTransformer,
+            new NumberValue('1609632000.000000'),
             $dateTimeObject->undefinedDateTime,
             new \ReflectionProperty($dateTimeObject, 'undefinedDateTime'),
+            \DateTimeImmutable::class,
+        ];
+
+        $customTransformer = new DateTimeTransformer('Y-m-d\TH:i:s.uP');
+
+        yield 'Custom DateTime' => [
+            $customTransformer,
+            '2021-01-01T00:00:00.654321+00:00',
+            $dateTimeObject->dateTime,
+            new \ReflectionProperty($dateTimeObject, 'dateTime'),
+            \DateTime::class,
+        ];
+
+        yield 'Custom DateTimeImmutable' => [
+            $customTransformer,
+            '2021-01-02T00:00:00.000000+00:00',
+            $dateTimeObject->dateTimeImmutable,
+            new \ReflectionProperty($dateTimeObject, 'dateTimeImmutable'),
             \DateTimeImmutable::class,
         ];
     }
 
     #[DataProvider('timestampProvider')]
     public function testTransformToDatabase(
+        DateTimeTransformer $transformer,
         $timestamp,
         \DateTimeInterface $dateTime,
         \ReflectionProperty $property,
     ): void {
-        $this->assertSame($timestamp, $this->transformer->toDatabase($dateTime, $property));
+        $this->assertEquals($timestamp, $transformer->toDatabase($dateTime, $property));
     }
 
     #[DataProvider('timestampProvider')]
     public function testTransformFromDatabase(
+        DateTimeTransformer $transformer,
         $timestamp,
         \DateTimeInterface $dateTime,
         \ReflectionProperty $property,
         string $className,
     ): void {
-        $result = $this->transformer->fromDatabase($timestamp, $property);
+        $result = $transformer->fromDatabase($timestamp, $property);
         $this->assertInstanceOf($className, $result);
         $this->assertEquals($dateTime, $result);
     }
 
     public function testErrorOnInvalidProperty(): void
     {
+        $transformer = new DateTimeTransformer();
         $dateTimeObject = new DateTimeObject();
         $this->expectException(TransformationException::class);
         $this->expectExceptionMessage('Value must be an instance of \DateTimeInterface');
-        $this->transformer->toDatabase($dateTimeObject->notDateTime, new \ReflectionProperty($dateTimeObject, 'notDateTime'));
+        $transformer->toDatabase($dateTimeObject->notDateTime, new \ReflectionProperty($dateTimeObject, 'notDateTime'));
     }
 }

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace HarmonicDigital\DynamodbOdm\Test\Transformer;
+namespace HarmonicDigital\DynamodbOdm\Test\Transformer\Normalizer;
 
 use HarmonicDigital\DynamodbOdm\Test\Model\EmbeddedItem;
 use HarmonicDigital\DynamodbOdm\Test\Model\TestEmbeddedObject;
 use HarmonicDigital\DynamodbOdm\Test\Model\TestMultipleEmbeddedObject;
-use HarmonicDigital\DynamodbOdm\Transformer\MapableTransformer;
+use HarmonicDigital\DynamodbOdm\Transformer\Normalizer\MapableNormalizer;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -15,8 +15,8 @@ use PHPUnit\Framework\TestCase;
 /**
  * @internal
  */
-#[CoversClass(MapableTransformer::class)]
-class MapableTransformerTest extends TestCase
+#[CoversClass(MapableNormalizer::class)]
+class MapableNormalizerTest extends TestCase
 {
     public static function itemProvider(): iterable
     {
@@ -50,7 +50,7 @@ class MapableTransformerTest extends TestCase
     #[DataProvider('itemProvider')]
     public function testNormalize(object $object, array $databaseData, string $className, string $property)
     {
-        $transformer = new MapableTransformer();
+        $transformer = new MapableNormalizer();
         $result = $transformer->normalize($object, $object::class);
         $this->assertSame($databaseData, $result);
     }
@@ -58,7 +58,7 @@ class MapableTransformerTest extends TestCase
     #[DataProvider('itemProvider')]
     public function testDenormalize(object $object, array $databaseData, string $className, string $property)
     {
-        $transformer = new MapableTransformer();
+        $transformer = new MapableNormalizer();
         $result = $transformer->denormalize($databaseData, $object::class);
         $this->assertInstanceOf($object::class, $result);
         $this->assertEquals($object, $result);

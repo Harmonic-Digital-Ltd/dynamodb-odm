@@ -15,6 +15,7 @@ use HarmonicDigital\DynamodbOdm\ItemManager;
 use HarmonicDigital\DynamodbOdm\Parser\FieldParser;
 use HarmonicDigital\DynamodbOdm\Parser\MappedField;
 use HarmonicDigital\DynamodbOdm\Parser\MappedItem;
+use HarmonicDigital\DynamodbOdm\Test\Model\DateTimeObject;
 use HarmonicDigital\DynamodbOdm\Test\Model\EmbeddedItem;
 use HarmonicDigital\DynamodbOdm\Test\Model\TestEmbeddedObject;
 use HarmonicDigital\DynamodbOdm\Test\Model\TestMultipleEmbeddedObject;
@@ -79,7 +80,7 @@ class ItemManagerTest extends TestCase
                             'stringSet' => ['SS' => ['one', 'two', 'three']],
                             'numberSet' => ['NS' => ['1', '2.5', '-3']],
                             'binarySet' => ['BS' => ['binary1', 'binary2']],
-                            'dateTimeImmutable' => ['S' => '1609459200.000000'],
+                            'dateTimeImmutable' => ['N' => '1609459200.000000'],
                         ],
                     ],
                 ]
@@ -377,5 +378,60 @@ class ItemManagerTest extends TestCase
         ;
 
         $this->client->createTable(TestObjectTwo::class);
+    }
+
+    public function testPutWithDateTime(): void
+    {
+        $item = new DateTimeObject();
+        $this->dynamoDbClient->expects($this->once())
+            ->method('__call')
+            ->with(
+                'putItem',
+                [
+                    [
+                        'TableName' => 'DateTimeObject',
+                        'Item' => [
+                            'id' => ['S' => 'id'],
+                            'dateTimeImmutable' => ['S' => '2021-01-02T00:00:00+00:00'],
+                            'dateTime' => ['N' => '1609459200.654321'],
+                            'dateTimeInterface' => ['N' => '1609632000.000000'],
+                        ],
+                    ],
+                ]
+            )
+        ;
+
+        $this->client->put($item);
+    }
+
+    public function testGetDateTime(): void
+    {
+        $this->dynamoDbClient->expects($this->once())
+            ->method('__call')
+            ->with(
+                'getItem',
+                [
+                    [
+                        'TableName' => 'DateTimeObject',
+                        'Key' => [
+                            'id' => ['S' => 'id'],
+                        ],
+                    ],
+                ]
+            )
+            ->willReturn([
+                'Item' => [
+                    'id' => ['S' => 'id'],
+                    'dateTimeImmutable' => ['S' => '2021-01-02T00:00:00+00:00'],
+                    'dateTime' => ['S' => '1609459200.654321'],
+                    'dateTimeInterface' => ['S' => '1609632000.000000'],
+                ],
+            ])
+        ;
+
+        /** @var DateTimeObject $result */
+        $result = $this->client->getItem(DateTimeObject::class, 'id');
+        $this->assertInstanceOf(DateTimeObject::class, $result);
+        $this->assertEquals(new DateTimeObject(), $result);
     }
 }

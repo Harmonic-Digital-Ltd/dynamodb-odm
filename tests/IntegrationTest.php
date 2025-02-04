@@ -6,6 +6,7 @@ namespace HarmonicDigital\DynamodbOdm\Test;
 
 use Aws\DynamoDb\DynamoDbClient;
 use HarmonicDigital\DynamodbOdm\ItemManager;
+use HarmonicDigital\DynamodbOdm\Test\Model\DateTimeObject;
 use HarmonicDigital\DynamodbOdm\Test\Model\EmbeddedItem;
 use HarmonicDigital\DynamodbOdm\Test\Model\TestEmbeddedObject;
 use HarmonicDigital\DynamodbOdm\Test\Model\TestMultipleEmbeddedObject;
@@ -94,5 +95,14 @@ class IntegrationTest extends TestCase
         $this->assertEquals($retrievedItem2, $retrievedItem3);
         $this->assertNotEquals($item, $retrievedItem3);
         $this->client->delete($item);
+    }
+
+    public function testWithDateTime(): void
+    {
+        $dateTime = new DateTimeObject();
+        $this->client->createTable($dateTime::class);
+        $this->client->put($dateTime);
+        $retrievedItem = $this->client->getItem($dateTime::class, 'id');
+        $this->assertEquals($dateTime, $retrievedItem);
     }
 }

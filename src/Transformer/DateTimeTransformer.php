@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace HarmonicDigital\DynamodbOdm\Transformer;
 
+use Aws\DynamoDb\NumberValue;
 use HarmonicDigital\DynamodbOdm\Transformer\Exception\TransformationException;
 
 #[\Attribute(\Attribute::TARGET_PROPERTY)]
@@ -13,16 +14,18 @@ final class DateTimeTransformer implements Transformer
         public string $format = 'U.u'
     ) {}
 
-    public function toDatabase(mixed $value, \ReflectionProperty $property): string
+    public function toDatabase(mixed $value, \ReflectionProperty $property): NumberValue|string
     {
         if (!$value instanceof \DateTimeInterface) {
             throw new TransformationException('Value must be an instance of \DateTimeInterface');
         }
 
-        return $value->format($this->format);
+        $dbValue = $value->format($this->format);
+
+        return \is_numeric($dbValue) ? new NumberValue($dbValue) : $dbValue;
     }
 
-    public function fromDatabase(null|array|bool|float|int|string $value, \ReflectionProperty $property): \DateTimeInterface
+    public function fromDatabase(null|array|bool|float|int|object|string $value, \ReflectionProperty $property): \DateTimeInterface
     {
         $type = $property->getType();
         $declaredType = null;

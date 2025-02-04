@@ -8,7 +8,8 @@ use Aws\DynamoDb\BinaryValue;
 use Aws\DynamoDb\Marshaler;
 use Aws\DynamoDb\NumberValue;
 use HarmonicDigital\DynamodbOdm\Attribute\Field;
-use HarmonicDigital\DynamodbOdm\Transformer\MapableTransformer;
+use HarmonicDigital\DynamodbOdm\Transformer\Normalizer\MapableNormalizer;
+use HarmonicDigital\DynamodbOdm\Transformer\Normalizer\TransformedNormalizer;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
@@ -19,7 +20,8 @@ final readonly class FieldParser implements FieldParserInterface
     public function __construct(
         private Marshaler $marshaller = new Marshaler(),
         private DenormalizerInterface&NormalizerInterface $normalizer = new Serializer([
-            new MapableTransformer(),
+            new TransformedNormalizer(),
+            new MapableNormalizer(),
             new ObjectNormalizer(),
         ]),
     ) {}

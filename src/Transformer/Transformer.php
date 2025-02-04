@@ -11,10 +11,10 @@ interface Transformer
     /**
      * @throws TransformationException
      */
-    public function toDatabase(mixed $value, \ReflectionProperty $property): null|array|bool|float|int|string;
+    public function toDatabase(mixed $value, \ReflectionProperty $property): null|array|bool|float|int|object|string;
 
     /**
      * @throws TransformationException
      */
-    public function fromDatabase(null|array|bool|float|int|string $value, \ReflectionProperty $property): mixed;
+    public function fromDatabase(null|array|bool|float|int|object|string $value, \ReflectionProperty $property): mixed;
 }

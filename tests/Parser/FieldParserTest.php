@@ -75,7 +75,7 @@ class FieldParserTest extends TestCase
                 'stringSet' => ['SS' => ['one', 'two', 'three']],
                 'numberSet' => ['NS' => ['1', '2.5', '-3']],
                 'binarySet' => ['BS' => ['binary1', 'binary2']],
-                'dateTimeImmutable' => ['S' => '1609459200.000000'],
+                'dateTimeImmutable' => ['N' => '1609459200.000000'],
             ],
         ];
 
