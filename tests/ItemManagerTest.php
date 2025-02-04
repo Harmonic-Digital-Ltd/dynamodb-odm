@@ -22,6 +22,9 @@ use HarmonicDigital\DynamodbOdm\Test\Model\TestMultipleEmbeddedObject;
 use HarmonicDigital\DynamodbOdm\Test\Model\TestObject;
 use HarmonicDigital\DynamodbOdm\Test\Model\TestObjectTwo;
 use HarmonicDigital\DynamodbOdm\Transformer\DateTimeTransformer;
+use HarmonicDigital\DynamodbOdm\Transformer\Normalizer\MapableNormalizer;
+use HarmonicDigital\DynamodbOdm\Transformer\Normalizer\PrenormalizedValue;
+use HarmonicDigital\DynamodbOdm\Transformer\Normalizer\TransformedNormalizer;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -41,6 +44,9 @@ use PHPUnit\Framework\TestCase;
 #[UsesClass(Key::class)]
 #[UsesClass(PartitionKey::class)]
 #[UsesClass(SortKey::class)]
+#[UsesClass(MapableNormalizer::class)]
+#[UsesClass(TransformedNormalizer::class)]
+#[UsesClass(PrenormalizedValue::class)]
 class ItemManagerTest extends TestCase
 {
     private ItemManager $client;
