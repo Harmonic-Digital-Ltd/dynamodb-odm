@@ -10,7 +10,7 @@ use HarmonicDigital\DynamodbOdm\Attribute\Field;
 use HarmonicDigital\DynamodbOdm\Attribute\Key;
 use HarmonicDigital\DynamodbOdm\Attribute\PartitionKey;
 use HarmonicDigital\DynamodbOdm\Attribute\SortKey;
-use HarmonicDigital\DynamodbOdm\Transformer\Normalizer\PrenormalizedValue;
+use HarmonicDigital\DynamodbOdm\Transformer\Normalizer\PredenormalizedValue;
 use HarmonicDigital\DynamodbOdm\Transformer\Transformer;
 
 final readonly class MappedField
@@ -78,7 +78,7 @@ final readonly class MappedField
             return $value;
         }
 
-        return new PrenormalizedValue($this->transformer->fromDatabase($value, $this->property));
+        return new PredenormalizedValue($this->transformer->fromDatabase($value, $this->property));
     }
 
     /**

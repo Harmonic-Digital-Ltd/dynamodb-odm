@@ -11,7 +11,7 @@ class TransformedNormalizer implements DenormalizerInterface
 {
     public function denormalize(mixed $data, string $type, ?string $format = null, array $context = []): mixed
     {
-        if (!$data instanceof PrenormalizedValue) {
+        if (!$data instanceof PredenormalizedValue) {
             throw new LogicException('The data must be an instance of PrenormalizedValue');
         }
 
@@ -24,7 +24,7 @@ class TransformedNormalizer implements DenormalizerInterface
         ?string $format = null,
         array $context = []
     ): bool {
-        return $data instanceof PrenormalizedValue;
+        return $data instanceof PredenormalizedValue;
     }
 
     public function getSupportedTypes(?string $format): array

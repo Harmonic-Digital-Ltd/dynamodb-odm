@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace HarmonicDigital\DynamodbOdm\Test\Transformer\Normalizer;
 
-use HarmonicDigital\DynamodbOdm\Transformer\Normalizer\PrenormalizedValue;
+use HarmonicDigital\DynamodbOdm\Transformer\Normalizer\PredenormalizedValue;
 use HarmonicDigital\DynamodbOdm\Transformer\Normalizer\TransformedNormalizer;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
@@ -14,7 +14,7 @@ use Symfony\Component\Serializer\Exception\LogicException;
  * @internal
  */
 #[CoversClass(TransformedNormalizer::class)]
-#[CoversClass(PrenormalizedValue::class)]
+#[CoversClass(PredenormalizedValue::class)]
 class TransformedNormalizerTest extends TestCase
 {
     private TransformedNormalizer $normalizer;
@@ -26,7 +26,7 @@ class TransformedNormalizerTest extends TestCase
 
     public function testDenormalizeWithValidData(): void
     {
-        $value = new PrenormalizedValue('testValue');
+        $value = new PredenormalizedValue('testValue');
 
         $result = $this->normalizer->denormalize($value, 'string');
 
@@ -43,7 +43,7 @@ class TransformedNormalizerTest extends TestCase
 
     public function testSupportsDenormalizationWithPrenormalizedValue(): void
     {
-        $value = new PrenormalizedValue('testValue');
+        $value = new PredenormalizedValue('testValue');
 
         $this->assertTrue($this->normalizer->supportsDenormalization($value, 'string'));
     }
